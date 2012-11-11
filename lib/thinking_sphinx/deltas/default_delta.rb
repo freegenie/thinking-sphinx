@@ -43,8 +43,12 @@ module ThinkingSphinx
       def update_delta_indexes(model)
         config = ThinkingSphinx::Configuration.instance
         rotate = ThinkingSphinx.sphinx_running? ? "--rotate" : ""
-        
-        output = `#{config.bin_path}#{config.indexer_binary_name} --config "#{config.config_file}" #{rotate} #{model.delta_index_names.join(' ')}`
+        begin
+          output = `#{config.bin_path}#{config.indexer_binary_name} --config "#{config.config_file}" #{rotate} #{model.delta_index_names.join(' ')}`
+        rescue
+          rotate = ""
+          retry
+        end
         puts(output) unless ThinkingSphinx.suppress_delta_output?
       end
       
